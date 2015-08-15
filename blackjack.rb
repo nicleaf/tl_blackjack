@@ -69,7 +69,7 @@ def burst?(who,total)
 end
 
 
-def blackjack?(who,cards,option_cards=[["0", "0"], ["0", "0"]])
+def blackjack?(cards,option_cards=[["0", "0"], ["0", "0"]])
   cards.sort
   option_cards.sort
   if ((cards.sort[0][0] == '10') && (cards.sort[1][0] == 'A') || 
@@ -132,7 +132,7 @@ begin
     dealer_total = calculate_total("Dealer",dealer)
     say("Dealer's card")
     display_card_hide1_card(dealer)
-    is_player_blackjack = blackjack?("Player",player,dealer)
+    is_player_blackjack = blackjack?(player,dealer)
 
     # ask player to hit or stay
     begin
@@ -166,7 +166,7 @@ begin
     
     #dealer hit/stay - included hard/soft AI.
     begin
-      is_dealer_blackjack = blackjack?("Dealer",dealer)
+      is_dealer_blackjack = blackjack?(dealer)
       winner("No one","Both blackjack! Too bad!") if is_player_blackjack == 'tie'
       winner("Player","Blackjack") if is_player_blackjack == true
       winner("Dealer","Blackjack") if is_dealer_blackjack && !is_player_bust && !is_player_blackjack

@@ -27,9 +27,6 @@ def hit_card(who,cards)
 end
 
 def calculate_total(who,cards_in_hand)
-#  cards_in_hand = [["A", "c"], ["0", "d"],["Q", "c"], 
-#  ["A", "d"],["0", "c"], ["0", "d"]]
-#  p cards_in_hand
   total = 0
   ace_count = 0
   cards_in_hand.each do |card|
@@ -65,8 +62,6 @@ end
 
 def burst?(who,total)
   if total > 21
-#    puts ""
-#    puts "#{who} busted!!!"
     return true
   else
     return nil
@@ -75,8 +70,6 @@ end
 
 
 def blackjack?(who,cards,option_cards=[["0", "0"], ["0", "0"]])
-  #p cards = [["A", "d"], ["10", "s"]]
-  #p option_cards = [["1", "c"], ["K", "d"]]
   cards.sort
   option_cards.sort
   if ((cards.sort[0][0] == '10') && (cards.sort[1][0] == 'A') || 
@@ -85,13 +78,10 @@ def blackjack?(who,cards,option_cards=[["0", "0"], ["0", "0"]])
   ((option_cards.sort[0][0] == '10') && (option_cards.sort[1][0] == 'A') || 
     ((option_cards.sort[0][0] == 'A') && ((option_cards.sort[1][0] == 'J') || 
       (option_cards.sort[1][0] == 'Q')|| (option_cards.sort[1][0] == 'K'))))
-#   puts ""
-#   puts "Both Blackjack. It is a tie!!!"
     return 'tie'
   elsif (cards.sort[0][0] == '10') && (cards.sort[1][0] == 'A') || 
     ((cards.sort[0][0] == 'A') && ((cards.sort[1][0] == 'J') || 
     (cards.sort[1][0] == 'Q')|| (cards.sort[1][0] == 'K')))
-#    winner("#{who}","Blackjack")
     return true
   else
     return nil
@@ -125,7 +115,6 @@ begin
   player = []
   dealer = []
   decks = new_deck.shuffle
-  #game_end = nil
   is_player_bust = nil
   is_dealer_bust = nil
   is_player_blackjack = nil
@@ -133,23 +122,19 @@ begin
 
   puts "\n> Do you want to start blackjack game? \n('y' = start game ; any key to quit!)" 
   continue = gets.chomp.downcase
+  # first time draw
   if continue == 'y'
-#    p decks
     first_draw(player, dealer, decks)
     say("Player's card")
- #   player = [["A", "d"], ["10", "s"]]
-#    dealer = [["A", "d"], ["10", "s"]]
     display_card(player)
     player_total = calculate_total("Player",player)
     print_total("Player",player_total)
     dealer_total = calculate_total("Dealer",dealer)
     say("Dealer's card")
     display_card_hide1_card(dealer)
-#    display_card(dealer)
-#    print_total("Dealer",dealer)
     is_player_blackjack = blackjack?("Player",player,dealer)
 
-
+    # ask player to hit or stay
     begin
       break if is_player_blackjack
       puts "\nDo you want to 'hit' or 'stay?\n 'h' for hit ; 's' for stay"
@@ -167,8 +152,7 @@ begin
       end
     end until answer == 's' || is_player_bust
 
-
-#    p decks
+    # reload the game to open dealer's hide card.
     system("clear")
     say("Player's card")
     display_card(player)
@@ -179,7 +163,8 @@ begin
     print_total("Dealer",dealer_total)
     is_player_bust = burst?("Player",player_total)
     puts "Player busted!!!\n" if is_player_bust
-#    break if is_player_bust
+    
+    #dealer hit/stay - included hard/soft AI.
     begin
       is_dealer_blackjack = blackjack?("Dealer",dealer)
       winner("No one","Both blackjack! Too bad!") if is_player_blackjack == 'tie'
@@ -199,7 +184,7 @@ begin
       puts "Dealer busted!!!\n" if is_dealer_bust
     end until dealer_total >= 17 || is_dealer_bust
 
- 
+    #when both player & dealer doesn't get busted - compare value 
     if !(is_dealer_bust == true || is_player_bust == true || 
       is_player_blackjack == true || is_dealer_blackjack == true)
       if player_total.to_i == dealer_total.to_i
@@ -212,11 +197,3 @@ begin
     end
   end    
 end until continue != 'y'
-
-
-#check if anyone is blackjack, 
-# check is it hard or soft.
-# if both blackjack, dealer win, end game.
-# elsif player blackjack, player win, end game.
-# elsif dealer blackjack, dealer win, end game.
-# else do nothing, continue to ask player to hit or stay.

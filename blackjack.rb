@@ -72,7 +72,7 @@ def check_blackjack(cards,option_cards=[["0", "0"], ["0", "0"]])
   end
 end
 
-def winner(who,msg)
+def print_winner(who,msg)
   puts ""
   puts "> #{who} won! #{msg}"
 end
@@ -151,9 +151,9 @@ begin
     #dealer hit/stay - included hard/soft AI.
     begin
       is_dealer_blackjack = check_blackjack(dealer)
-      winner("No one","Both blackjack! Too bad!") if is_player_blackjack == 'tie'
-      winner("Player","Blackjack") if is_player_blackjack == true
-      winner("Dealer","Blackjack") if is_dealer_blackjack && !is_player_bust && !is_player_blackjack
+      print_winner("No one","Both blackjack! Too bad!") if is_player_blackjack == 'tie'
+      print_winner("Player","Blackjack") if is_player_blackjack == true
+      print_winner("Dealer","Blackjack") if is_dealer_blackjack && !is_player_bust && !is_player_blackjack
       break if dealer_total >= 17 || is_dealer_blackjack || 
         is_player_bust || is_player_blackjack
       hit_card(dealer,decks)
@@ -172,11 +172,11 @@ begin
     if !(is_dealer_bust == true || is_player_bust == true || 
       is_player_blackjack == true || is_dealer_blackjack == true)
       if player_total.to_i == dealer_total.to_i
-        winner("No one","Because it's tie! Too bad!")
+        print_winner("No one","Because it's tie! Too bad!")
       elsif player_total.to_i > dealer_total.to_i
-        winner("Player","Good job!!")
+        print_winner("Player","Good job!!")
       else        
-        winner("Dealer","No luck!")
+        print_winner("Dealer","No luck!")
       end
     end
   end    

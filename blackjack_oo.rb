@@ -197,7 +197,8 @@ class Game
 
   def dealer_turn
     begin
-      break if dealer.total >=17 || is_dealer_blackjack || is_player_bust || is_player_blackjack
+      break if dealer.total >=17 || is_dealer_blackjack || 
+      is_player_bust || is_player_blackjack
       dealer.add_card(deck.deal_card)
       player.display_card_n_total
       dealer.display_card_n_total

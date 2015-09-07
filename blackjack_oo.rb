@@ -69,7 +69,6 @@ module Hand
   end
 
   def is_blackjack?
-    cards.sort
     if ((cards.sort[0][0] == '10') && (cards.sort[1][0] == 'A') || 
       ((cards.sort[0][0] == 'A') && ((cards.sort[1][0] == 'J') || 
         (cards.sort[1][0] == 'Q')|| (cards.sort[1][0] == 'K'))))
@@ -104,18 +103,15 @@ class Dealer
 
   def display_card_hide1_card
     display_title
-    cards.each do |card|
-      print "| #{card[0]} #{card[1]} | "
-      break
-    end
+    print "| #{cards.first[0]} #{cards.first[1]} | "
     print "| < Hide > | "
     puts ""
   end
 end
 
 class Game
-  attr_accessor :player, :deck, :is_player_blackjack
-  attr_accessor :is_dealer_blackjack, :is_player_bust, :is_dealer_bust
+  attr_accessor :player, :deck, :is_player_blackjack,
+             :is_dealer_blackjack, :is_player_bust, :is_dealer_bust
   attr_reader :dealer
 
   def initialize
@@ -149,11 +145,6 @@ class Game
     dealer.cards = []
   end
 
-  def display_card_n_total
-    player.display_card
-    player.print_total
-  end
-
   def player_turn
     @is_player_blackjack = player.is_blackjack?
     begin
@@ -185,7 +176,7 @@ class Game
 
   def any_blackjack_winner_or_player_bursted?
     if is_player_bust
-      puts "#{player.name} busted!!!\n" if is_player_bust
+      puts "#{player.name} busted!!!\n"
     elsif is_player_blackjack && is_dealer_blackjack
       print_winner("No one","Both blackjack! Too bad!")
     elsif is_player_blackjack
@@ -198,7 +189,7 @@ class Game
   def dealer_turn
     begin
       break if dealer.total >=17 || is_dealer_blackjack || 
-      is_player_bust || is_player_blackjack
+                is_player_bust || is_player_blackjack
       dealer.add_card(deck.deal_card)
       player.display_card_n_total
       dealer.display_card_n_total
@@ -210,9 +201,9 @@ class Game
   def who_won? 
     if !(is_dealer_bust || is_player_bust || 
       is_player_blackjack || is_dealer_blackjack)
-      if player.total.to_i == dealer.total.to_i
+      if player.total == dealer.total
         print_winner("No one","Because it's tie! Too bad!")
-      elsif player.total.to_i > dealer.total.to_i
+      elsif player.total > dealer.total
         print_winner("Player","Good job!!")
       else        
         print_winner("Dealer","No luck!")

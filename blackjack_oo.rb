@@ -79,16 +79,35 @@ module Hand
   end
 end
 
+module Chip
+  def display_chip_info
+    puts "#{name}'s total chip = #{chip}"
+    puts "Betting : #{bet_chip}"
+  end
+
+  def update_total_chip(who_win)
+    if @chip > 0
+      if who_win == "player_win"
+        @chip += @bet_chip
+      else
+        @chip -= @bet_chip
+      end
+    end
+  end
+end
 
 class Player
   include Hand
+  include Chip
 
-  attr_accessor :name, :cards
+  attr_accessor :name, :cards, :chip, :bet_chip
 
   def initialize(name)
     @name = name
     @cards = []
+    @bet_chip = 0
   end
+
 end
 
 class Dealer
@@ -120,6 +139,10 @@ class Game
     player_name = gets.chomp
     @player = Player.new(player_name)
     @dealer = Dealer.new
+    begin
+      puts "How much chips you have (min = 1): "
+      player.chip = gets.chomp.to_i
+    end until player.chip > 0
   end
 
   def first_2_draw_player_dealer
@@ -136,6 +159,7 @@ class Game
   end
 
   def reset
+    system('clear')
     @is_player_bust = false
     @is_dealer_bust = false
     @is_player_blackjack = false
@@ -143,6 +167,7 @@ class Game
     @deck = Deck.new
     player.cards = []
     dealer.cards = []
+    player.bet_chip = 0
   end
 
   def player_turn
@@ -153,10 +178,12 @@ class Game
       answer = gets.chomp.downcase
       if answer == 'h'
         player.add_card(deck.deal_card)
+        player.display_chip_info
         player.display_card_n_total
         dealer.display_card_hide1_card
         @is_player_bust = player.burst?
         puts "#{player.name} busted!!!\n" if is_player_bust
+        player.update_total_chip("player_loss") if is_player_bust
       end
     end until answer == 's' || is_player_bust
   end
@@ -176,12 +203,15 @@ class Game
 
   def any_blackjack_winner_or_player_bursted?
     if is_player_bust
+      player.update_total_chip("player_bust")
       puts "#{player.name} busted!!!\n"
     elsif is_player_blackjack && is_dealer_blackjack
       print_winner("No one","Both blackjack! Too bad!")
     elsif is_player_blackjack
+      player.update_total_chip("player_win")
       print_winner("Player","Blackjack")
     elsif is_dealer_blackjack
+      player.update_total_chip("player_loss")
       print_winner("Dealer","Blackjack")
     end
   end
@@ -191,10 +221,12 @@ class Game
       break if dealer.total >=17 || is_dealer_blackjack || 
                 is_player_bust || is_player_blackjack
       dealer.add_card(deck.deal_card)
+      player.display_chip_info
       player.display_card_n_total
       dealer.display_card_n_total
       @is_dealer_bust = dealer.burst?
       puts "#{dealer.name} busted!!!\n" if is_dealer_bust
+      player.update_total_chip("player_win") if is_dealer_bust
    end until dealer.total >=17 || is_dealer_bust
   end
 
@@ -204,17 +236,30 @@ class Game
       if player.total == dealer.total
         print_winner("No one","Because it's tie! Too bad!")
       elsif player.total > dealer.total
+        player.update_total_chip("player_win")
         print_winner("Player","Good job!!")
-      else        
+      else
+        player.update_total_chip("player_loss")
         print_winner("Dealer","No luck!")
       end
     end
   end
 
+  def ask_player_how_much_chip_to_bet
+    begin
+      puts "#{player.name}, how much chip(s) do you want to bet? \n (Min = 1 chip)"
+      player.bet_chip = gets.chomp.to_i
+      puts "Sorry, you don't have enought chips. You can only bet maximum: #{player.chip}"
+    end until player.bet_chip <= player.chip
+  end
+
   def play
     loop do
       reset
+      player.display_chip_info
+      ask_player_how_much_chip_to_bet
       first_2_draw_player_dealer
+      player.display_chip_info
       player.display_card_n_total
       dealer.display_card_hide1_card
       player_turn
@@ -222,6 +267,8 @@ class Game
       any_blackjack_winner_or_player_bursted?
       dealer_turn
       who_won?
+      puts "Sorry, you out of chip!" if @player.chip == 0
+      break if @player.chip == 0
       puts "Type 'y' to replay again."
       break if gets.chomp.downcase != 'y'
     end

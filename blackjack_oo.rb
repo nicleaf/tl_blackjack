@@ -249,8 +249,10 @@ class Game
     begin
       puts "#{player.name}, how much chip(s) do you want to bet? \n (Min = 1 chip)"
       player.bet_chip = gets.chomp.to_i
-      puts "Sorry, you don't have enought chips. You can only bet maximum: #{player.chip}"
-    end until player.bet_chip <= player.chip
+      puts "Sorry, No negative betting! (Trying to be smart!??) " if player.bet_chip < 0
+      puts "Sorry, please put some bet. Thanks! " if player.bet_chip == 0
+      puts "Sorry, you don't have enought chips. You can only bet maximum: #{player.chip}" if player.bet_chip > player.chip
+    end until player.bet_chip <= player.chip && player.bet_chip > 0
   end
 
   def play
